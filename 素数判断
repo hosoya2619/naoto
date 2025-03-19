@@ -16,11 +16,29 @@
         .container {
             text-align: center;
         }
+        .title {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            font-size: 40px; /* 必要に応じてサイズを調整 */
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 0;
+        }
         .selected-mode {
-            font-size: 36px;
+            font-size: 50px;
             font-weight: bold;
             color: #333;
             margin-bottom: 20px;
+        }
+        #randomNumber, #primeAnswer {
+            font-size: 28px; /* 必要に応じてサイズを調整 */
+            font-weight: bold; /* 太字にして見やすくする（オプション） */
+            color: #333; /* 必要に応じて色を変更 */
+        }
+        #primeQuestion {
+            font-size: 24px; /* 質問部分の文字を大きく設定 */
+            margin-bottom: 10px;
         }
     </style>
     <script>
@@ -82,7 +100,7 @@
         }
 
         function answerPrime(isPrimeAnswer) {
-            const randomNumber = parseInt(document.getElementById('randomNumber').textContent.replace('ランダムな数字: ', ''), 10);
+            const randomNumber = parseInt(document.getElementById('randomNumber').textContent.replace('ランダムな数字: ', ''), 10);    
             const correctAnswer = isPrime(randomNumber) ? '素数' : '素数ではない';
             const userAnswer = isPrimeAnswer ? '素数' : '素数ではない';
             const resultText = (correctAnswer === userAnswer) ? '正解です！' : `間違いです。${randomNumber}は${correctAnswer}です。`;
@@ -111,11 +129,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>素数プログラム</h1>
+        <h1 class="title">素数プログラム</h1>
         <p id="modeDisplay" class="selected-mode">モードを選んでください</p>
         <div id="startButtons">
-            <button onclick="showPrimeCheck()" style="font-size: 24px;">素数チェック</button>
-            <button onclick="startGame()" style="font-size: 24px;">素数判断ゲーム</button>
+            <button onclick="showPrimeCheck()" style="font-size: 35px;">素数チェック</button>
+            <button onclick="startGame()" style="font-size: 35px;">素数判断ゲーム</button>
         </div>
         
         <div id="Check" style="display:none;">

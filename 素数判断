@@ -17,11 +17,11 @@
             text-align: center;
         }
         .title {
-            position: absolute;
-            top: 40px;
-            left: 40px;
+            position: fixed;
+            top: 10px; /* 固定位置: 上部中央 */
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 40px;
-            font-family: Arial, sans-serif;
             color: #333;
             margin: 0;
         }
@@ -31,45 +31,64 @@
             color: #333;
             margin-bottom: 20px;
         }
-        #fixedText {
-            font-size: 24px;
-            margin-bottom: 10px;
+        #primeGameContainer {
+            position: fixed;
+            top: 150px; /* 必要に応じて調整 */
+            left: 50%;
+            transform: translateX(-50%); /* 中央揃え */
+            text-align: center;
         }
-        #randomNumber {
+        #primeGameTitle {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        #randomNumberDisplay {
             font-size: 28px;
             font-weight: bold;
-            color: #333;
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+        #primeButtons button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #primeButtons button:hover {
+            background-color: #0056b3;
+        }
+        #backButton {
+            position: fixed; /* 固定位置 */
+            bottom: 20px; /* 画面下から20px */
+            right: 20px; /* 画面右から20px */
+            font-size: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #backButton:hover {
+            background-color: #0056b3;
         }
         #primeAnswer {
             font-size: 28px;
             font-weight: bold;
             color: #333;
-        }
-        #primeQuestion {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #backButton {
-            position: fixed; /* 固定位置 */
-            bottom: 20px; /* 画面下から20pxの位置 */
-            right: 20px; /* 画面右から20pxの位置 */
-            font-size: 20px; /* ボタンの文字サイズ */
-            padding: 10px 20px; /* ボタンの余白 */
-            background-color: #007BFF; /* ボタンの背景色 */
-            color: white; /* ボタンの文字色 */
-            border: none; /* ボーダーなし */
-            border-radius: 5px; /* 角を丸くする */
-            cursor: pointer; /* ポインター変更 */
-        }
-        #backButton:hover {
-            background-color: #0056b3; /* ホバー時の背景色 */
+            margin-top: 20px;
         }
     </style>
     <script>
         function isPrime(num) {
             if (num <= 1) return false;
-            for (let i = 2; i < Math.sqrt(num) + 1; i++) {
+            for (let i = 2; i <= Math.sqrt(num); i++) {
                 if (num % i === 0) return false;
             }
             return true;
@@ -89,7 +108,7 @@
                 document.getElementById('modeDisplay').textContent = 'ゲームスタート！';
                 setTimeout(() => {
                     document.getElementById('modeDisplay').textContent = '';
-                    document.getElementById('game').style.display = 'block';
+                    document.getElementById('primeGameContainer').style.display = 'block';
                     generateRandomNumber();
                 }, 1000);
             }
@@ -101,7 +120,7 @@
 
         function backToModeSelection() {
             document.getElementById('Check').style.display = 'none';
-            document.getElementById('game').style.display = 'none';
+            document.getElementById('primeGameContainer').style.display = 'none';
             document.getElementById('startButtons').style.display = 'block';
             document.getElementById('modeDisplay').textContent = 'モードを選んでください';
         }
@@ -113,24 +132,23 @@
             }
             const randomIndex = Math.floor(Math.random() * candidates.length);
             const randomNumber = candidates[randomIndex];
-            document.getElementById('randomNumber').textContent = randomNumber;
-            document.getElementById('primeQuestion').style.display = 'flex';
-            document.getElementById('primeAnswer').textContent = '';
-        }
-
-        function nextQuestionWithDelay() {
-            document.getElementById('primeAnswer').textContent = '次の問題に移ります...';
-            setTimeout(generateRandomNumber, 1000);
+            document.getElementById('randomNumberDisplay').textContent = `数字: ${randomNumber}`;
         }
 
         function answerPrime(isPrimeAnswer) {
-            const randomNumber = parseInt(document.getElementById('randomNumber').textContent, 10);
+            const randomNumber = parseInt(
+                document.getElementById('randomNumberDisplay').textContent.replace('数字: ', ''),
+                10
+            );
             const correctAnswer = isPrime(randomNumber) ? '素数' : '素数ではない';
             const userAnswer = isPrimeAnswer ? '素数' : '素数ではない';
-            const resultText = (correctAnswer === userAnswer) ? '正解です！' : `間違いです。${randomNumber}は${correctAnswer}です。`;
+            const resultText =
+                correctAnswer === userAnswer
+                    ? '正解です！'
+                    : `間違いです。${randomNumber}は${correctAnswer}です。`;
             document.getElementById('primeAnswer').textContent = resultText;
 
-            setTimeout(nextQuestionWithDelay, 1000);
+            setTimeout(generateRandomNumber, 1000);
         }
 
         function showPrimeCheck() {
@@ -159,7 +177,7 @@
             <button onclick="showPrimeCheck()" style="font-size: 35px;">素数チェック</button>
             <button onclick="startGame()" style="font-size: 35px;">素数判断ゲーム</button>
         </div>
-        
+
         <div id="Check" style="display:none;">
             <h2>素数チェック</h2>
             <label for="numberInput">数字を入力してください:</label>
@@ -168,15 +186,12 @@
             <p id="result"></p>
         </div>
 
-        <div id="game" style="display:none;">
-            <h2>素数判断ゲーム</h2>
-            <div id="primeQuestion">
-                <div id="fixedText">素数判断ゲーム<br>この数字は素数ですか？</div>
-                <p id="randomNumber"></p>
-                <div>
-                    <button onclick="answerPrime(true)">素数</button>
-                    <button onclick="answerPrime(false)">素数ではない</button>
-                </div>
+        <div id="primeGameContainer" style="display: none;">
+            <div id="primeGameTitle">素数判断ゲーム</div>
+            <div id="randomNumberDisplay"></div>
+            <div id="primeButtons">
+                <button onclick="answerPrime(true)">素数</button>
+                <button onclick="answerPrime(false)">素数ではない</button>
             </div>
             <p id="primeAnswer"></p>
         </div>

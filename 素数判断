@@ -18,7 +18,7 @@
         }
         .title {
             position: fixed;
-            top: 10px; /* 固定位置: 上部中央 */
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 40px;
@@ -33,9 +33,9 @@
         }
         #primeGameContainer {
             position: fixed;
-            top: 150px; /* 必要に応じて調整 */
+            top: 150px;
             left: 50%;
-            transform: translateX(-50%); /* 中央揃え */
+            transform: translateX(-50%);
             text-align: center;
         }
         #primeGameTitle {
@@ -64,9 +64,9 @@
             background-color: #0056b3;
         }
         #backButton {
-            position: fixed; /* 固定位置 */
-            bottom: 20px; /* 画面下から20px */
-            right: 20px; /* 画面右から20px */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
             font-size: 20px;
             padding: 10px 20px;
             background-color: #007BFF;
@@ -84,8 +84,35 @@
             color: #333;
             margin-top: 20px;
         }
+        #scoreTableContainer {
+            position: fixed;
+            top: 10%;
+            right: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        #scoreTable {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        #scoreTable th, #scoreTable td {
+            border: 1px solid #333;
+            padding: 5px;
+            text-align: center;
+        }
+        #streakCount {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #007BFF;
+        }
     </style>
     <script>
+        let streak = 0; // 連続正解数
+        let attempts = 0; // 試行回数
+
         function isPrime(num) {
             if (num <= 1) return false;
             for (let i = 2; i <= Math.sqrt(num); i++) {
@@ -96,13 +123,14 @@
 
         function startGame() {
             hideButtons();
-            document.getElementById('modeDisplay').textContent = '素数判断ゲームモード';
+            document.getElementById('modeDisplay').textContent = '素数判断ゲーム - カウントダウン開始';
             countdownToStart(3);
         }
 
         function countdownToStart(seconds) {
+            document.getElementById('modeDisplay').textContent = '素数判断ゲーム'; // 固定表示
             if (seconds > 0) {
-                document.getElementById('modeDisplay').textContent = `${seconds}...`;
+                document.getElementById('modeDisplay').textContent += ` - ${seconds}...`;
                 setTimeout(() => countdownToStart(seconds - 1), 1000);
             } else {
                 document.getElementById('modeDisplay').textContent = 'ゲームスタート！';
@@ -140,15 +168,42 @@
                 document.getElementById('randomNumberDisplay').textContent.replace('数字: ', ''),
                 10
             );
-            const correctAnswer = isPrime(randomNumber) ? '素数' : '素数ではない';
-            const userAnswer = isPrimeAnswer ? '素数' : '素数ではない';
+            const correctAnswer = isPrime(randomNumber);
+            const userAnswer = isPrimeAnswer;
+            const resultSymbol = correctAnswer === userAnswer ? '○' : '×'; // 正誤を「○」「×」で表示
             const resultText =
                 correctAnswer === userAnswer
                     ? '正解です！'
-                    : `間違いです。${randomNumber}は${correctAnswer}です。`;
+                    : `間違いです。${randomNumber}は${correctAnswer ? '素数' : '素数ではない'}です。`;
+
             document.getElementById('primeAnswer').textContent = resultText;
 
-            setTimeout(generateRandomNumber, 1000);
+            // スコア更新ロジック
+            attempts++; // 試行回数を増加
+            if (correctAnswer === userAnswer) {
+                streak++; // 正解なら連続正解数を増加
+            } else {
+                streak = 0; // 不正解ならリセット
+            }
+
+            // 表を更新
+            const tableBody = document.querySelector('#scoreTable tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${attempts}</td>
+                <td>${resultSymbol}</td>
+            `;
+            tableBody.appendChild(newRow);
+
+            // 連続正解数を更新
+            document.getElementById('streakCount').textContent = `連続正解数: ${streak}`;
+
+            // コメントを1秒後に消す
+            setTimeout(() => {
+                document.getElementById('primeAnswer').textContent = '';
+            }, 1000);
+
+            setTimeout(generateRandomNumber, 1000); // 次の数字を生成
         }
 
         function showPrimeCheck() {
@@ -193,9 +248,24 @@
                 <button onclick="answerPrime(true)">素数</button>
                 <button onclick="answerPrime(false)">素数ではない</button>
             </div>
-            <p id="primeAnswer"></p>
+                <p id="primeAnswer"></p>
+            </div>
+            <button id="backButton" onclick="backToModeSelection()">モード選択に戻る</button>
         </div>
-        <button id="backButton" onclick="backToModeSelection()">モード選択に戻る</button>
-    </div>
-</body>
-</html>
+        
+        <div id="scoreTableContainer">
+            <h2>連続正解数</h2>
+            <table id="scoreTable">
+                <thead>
+                    <tr>
+                        <th>試行回数</th>
+                        <th>正誤</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <p id="streakCount">連続正解数: 0</p>
+        </div>
+    </body>
+    </html>

@@ -20,7 +20,7 @@
             position: absolute;
             top: 40px;
             left: 40px;
-            font-size: 40px; /* 必要に応じてサイズを調整 */
+            font-size: 40px;
             font-family: Arial, sans-serif;
             color: #333;
             margin: 0;
@@ -31,14 +31,39 @@
             color: #333;
             margin-bottom: 20px;
         }
-        #randomNumber, #primeAnswer {
-            font-size: 28px; /* 必要に応じてサイズを調整 */
-            font-weight: bold; /* 太字にして見やすくする（オプション） */
-            color: #333; /* 必要に応じて色を変更 */
+        #fixedText {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        #randomNumber {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+        #primeAnswer {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
         }
         #primeQuestion {
-            font-size: 24px; /* 質問部分の文字を大きく設定 */
-            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #backButton {
+            position: fixed; /* 固定位置 */
+            bottom: 20px; /* 画面下から20pxの位置 */
+            right: 20px; /* 画面右から20pxの位置 */
+            font-size: 20px; /* ボタンの文字サイズ */
+            padding: 10px 20px; /* ボタンの余白 */
+            background-color: #007BFF; /* ボタンの背景色 */
+            color: white; /* ボタンの文字色 */
+            border: none; /* ボーダーなし */
+            border-radius: 5px; /* 角を丸くする */
+            cursor: pointer; /* ポインター変更 */
+        }
+        #backButton:hover {
+            background-color: #0056b3; /* ホバー時の背景色 */
         }
     </style>
     <script>
@@ -53,20 +78,20 @@
         function startGame() {
             hideButtons();
             document.getElementById('modeDisplay').textContent = '素数判断ゲームモード';
-            countdownToStart(3); // 3秒カウントダウンを開始
+            countdownToStart(3);
         }
 
         function countdownToStart(seconds) {
             if (seconds > 0) {
                 document.getElementById('modeDisplay').textContent = `${seconds}...`;
-                setTimeout(() => countdownToStart(seconds - 1), 1000); // 1秒ごとに減少
+                setTimeout(() => countdownToStart(seconds - 1), 1000);
             } else {
-                document.getElementById('modeDisplay').textContent = 'ゲームスタート！'; // ゲームスタートを表示
+                document.getElementById('modeDisplay').textContent = 'ゲームスタート！';
                 setTimeout(() => {
-                    document.getElementById('modeDisplay').textContent = ''; // 「ゲームスタート」を消去
-                    document.getElementById('game').style.display = 'block'; // クイズ部分を表示
+                    document.getElementById('modeDisplay').textContent = '';
+                    document.getElementById('game').style.display = 'block';
                     generateRandomNumber();
-                }, 1000); // 1秒後に「ゲームスタート」を消去しゲーム開始
+                }, 1000);
             }
         }
 
@@ -82,31 +107,30 @@
         }
 
         function generateRandomNumber() {
-            const candidates = [0, 1, 2]; // Start with 0, 1, and 2
-            for (let i = 3; i <= 99; i += 2) { // Add all odd numbers from 3 to 99
+            const candidates = [0, 1, 2];
+            for (let i = 3; i <= 99; i += 2) {
                 candidates.push(i);
             }
-            const randomIndex = Math.floor(Math.random() * candidates.length); // Pick a random index
-            const randomNumber = candidates[randomIndex]; // Get the random number
-            document.getElementById('randomNumber').textContent = `ランダムな数字: ${randomNumber}`;
-            document.getElementById('primeQuestion').style.display = 'block';
+            const randomIndex = Math.floor(Math.random() * candidates.length);
+            const randomNumber = candidates[randomIndex];
+            document.getElementById('randomNumber').textContent = randomNumber;
+            document.getElementById('primeQuestion').style.display = 'flex';
             document.getElementById('primeAnswer').textContent = '';
         }
 
-
         function nextQuestionWithDelay() {
             document.getElementById('primeAnswer').textContent = '次の問題に移ります...';
-            setTimeout(generateRandomNumber, 1000); // 1秒後に次の問題を生成
+            setTimeout(generateRandomNumber, 1000);
         }
 
         function answerPrime(isPrimeAnswer) {
-            const randomNumber = parseInt(document.getElementById('randomNumber').textContent.replace('ランダムな数字: ', ''), 10);    
+            const randomNumber = parseInt(document.getElementById('randomNumber').textContent, 10);
             const correctAnswer = isPrime(randomNumber) ? '素数' : '素数ではない';
             const userAnswer = isPrimeAnswer ? '素数' : '素数ではない';
             const resultText = (correctAnswer === userAnswer) ? '正解です！' : `間違いです。${randomNumber}は${correctAnswer}です。`;
             document.getElementById('primeAnswer').textContent = resultText;
 
-            setTimeout(nextQuestionWithDelay, 1000); // 正解・不正解後1秒で次の問題
+            setTimeout(nextQuestionWithDelay, 1000);
         }
 
         function showPrimeCheck() {
@@ -142,20 +166,21 @@
             <input type="number" id="numberInput" required>
             <button onclick="checkPrime()">判定</button>
             <p id="result"></p>
-            <button onclick="backToModeSelection()">モード選択に戻る</button>
         </div>
 
         <div id="game" style="display:none;">
             <h2>素数判断ゲーム</h2>
-            <p id="randomNumber">ランダムな数字: </p>
-            <div id="primeQuestion" style="display: none;">
-                <p>この数字は素数ですか？</p>
-                <button onclick="answerPrime(true)">素数</button>
-                <button onclick="answerPrime(false)">素数ではない</button>
+            <div id="primeQuestion">
+                <div id="fixedText">素数判断ゲーム<br>この数字は素数ですか？</div>
+                <p id="randomNumber"></p>
+                <div>
+                    <button onclick="answerPrime(true)">素数</button>
+                    <button onclick="answerPrime(false)">素数ではない</button>
+                </div>
             </div>
             <p id="primeAnswer"></p>
-            <button onclick="backToModeSelection()">モード選択に戻る</button>
         </div>
+        <button id="backButton" onclick="backToModeSelection()">モード選択に戻る</button>
     </div>
 </body>
 </html>

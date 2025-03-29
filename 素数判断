@@ -48,7 +48,7 @@
             font-size: 28px;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #007BFF;
+            color: #00ff59;
         }
         #primeButtons button {
             font-size: 18px;
@@ -85,6 +85,7 @@
             margin-top: 20px;
         }
         #scoreTableContainer {
+            display: none; /* 初期状態で非表示 */
             position: fixed;
             top: 10%;
             right: 10px;
@@ -124,6 +125,7 @@
 
         function startGame() {
             hideButtons();
+            document.getElementById('scoreTableContainer').style.display = 'block'; // 表を表示
             document.getElementById('modeDisplay').textContent = '素数判断ゲーム - カウントダウン開始';
             countdownToStart(3);
         }
@@ -152,6 +154,7 @@
             document.getElementById('primeGameContainer').style.display = 'none';
             document.getElementById('startButtons').style.display = 'block';
             document.getElementById('modeDisplay').textContent = 'モードを選んでください';
+            document.getElementById('scoreTableContainer').style.display = 'none'; // 表を非表示
         }
 
         function generateRandomNumber() {
@@ -205,11 +208,12 @@
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td>${attempts}</td>
+                <td>${randomNumber}</td>
+                <td>${correctAnswer ? '素数' : '素数ではない'}</td>
                 <td>${resultSymbol}</td>
             `;
             tableBody.appendChild(newRow);
 
-            // 表示行数を10行に制限
             if (tableBody.rows.length > 10) {
                 tableBody.deleteRow(0);
             }
@@ -242,23 +246,13 @@
     </script>
 </head>
 <body>
-
     <div class="container">
-        <h1 class="title">素数プログラム</h1>
+        <h1 class="title"><div style="background-color: yellow;">素数プログラム</div></h1>
         <p id="modeDisplay" class="selected-mode">モードを選んでください</p>
         <div id="startButtons">
             <button onclick="showPrimeCheck()" style="font-size: 35px;">素数チェック</button>
             <button onclick="startGame()" style="font-size: 35px;">素数判断ゲーム</button>
         </div>
-
-        <div id="Check" style="display:none;">
-            <h2>素数チェック</h2>
-            <label for="numberInput">数字を入力してください:</label>
-            <input type="number" id="numberInput" required>
-            <button onclick="checkPrime()">判定</button>
-            <p id="result"></p>
-        </div>
-
         <div id="Check" style="display:none;">
             <h2>素数チェック</h2>
             <label for="numberInput">数字を入力してください:</label>
@@ -285,6 +279,8 @@
             <thead>
                 <tr>
                     <th>試行回数</th>
+                    <th>数字</th>
+                    <th>素数か否か</th>
                     <th>正誤</th>
                 </tr>
             </thead>

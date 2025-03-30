@@ -155,6 +155,17 @@
             document.getElementById('startButtons').style.display = 'block';
             document.getElementById('modeDisplay').textContent = 'モードを選んでください';
             document.getElementById('scoreTableContainer').style.display = 'none';
+            
+            const tableBody = document.querySelector('#scoreTable tbody');
+            tableBody.innerHTML = '';
+            streak = 0;
+            attempts = 0;
+            usedNumbers = [];
+            document.getElementById('streakCount').textContent = '連続正解数: 0';
+            
+            document.getElementById('numberInput').value = '';
+            document.getElementById('result').textContent = '';
+            document.getElementById('factors').textContent = '';
         }
 
         function generateRandomNumber() {
@@ -256,7 +267,7 @@
             
             if(!isPrimeResult && number > 1) {
               const factors = primeFactorization(number);
-              const factorsText = `${number}は <span style="color: red;">${factors.join(' × ')}</span> で表されます。`;
+              const factorsText = `素因数分解：<span style="color: red;">${factors.join(' × ')}</span>`;
               document.getElementById('factors').innerHTML = factorsText;
             } else {
               document.getElementById('factors').textContent = '';

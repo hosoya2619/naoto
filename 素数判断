@@ -85,7 +85,7 @@
             margin-top: 20px;
         }
         #scoreTableContainer {
-            display: none; /* 初期状態で非表示 */
+            display: none;
             position: fixed;
             top: 10%;
             right: 10px;
@@ -111,9 +111,9 @@
         }
     </style>
     <script>
-        let streak = 0; // 連続正解数
-        let attempts = 0; // 試行回数
-        let usedNumbers = []; // 使用済みの数字を記録
+        let streak = 0;
+        let attempts = 0;
+        let usedNumbers = [];
 
         function isPrime(num) {
             if (num <= 1) return false;
@@ -125,7 +125,7 @@
 
         function startGame() {
             hideButtons();
-            document.getElementById('scoreTableContainer').style.display = 'block'; // 表を表示
+            document.getElementById('scoreTableContainer').style.display = 'block';
             document.getElementById('modeDisplay').textContent = '素数判断ゲーム - カウントダウン開始';
             countdownToStart(3);
         }
@@ -154,7 +154,7 @@
             document.getElementById('primeGameContainer').style.display = 'none';
             document.getElementById('startButtons').style.display = 'block';
             document.getElementById('modeDisplay').textContent = 'モードを選んでください';
-            document.getElementById('scoreTableContainer').style.display = 'none'; // 表を非表示
+            document.getElementById('scoreTableContainer').style.display = 'none';
         }
 
         function generateRandomNumber() {
@@ -183,17 +183,11 @@
         }
 
         function answerPrime(isPrimeAnswer) {
-            const randomNumber = parseInt(
-                document.getElementById('randomNumberDisplay').textContent.replace('数字: ', ''),
-                10
-            );
+            const randomNumber = parseInt(document.getElementById('randomNumberDisplay').textContent.replace('数字: ', ''), 10);
             const correctAnswer = isPrime(randomNumber);
             const userAnswer = isPrimeAnswer;
             const resultSymbol = correctAnswer === userAnswer ? '○' : '×';
-            const resultText =
-                correctAnswer === userAnswer
-                    ? '正解です！'
-                    : `間違いです。${randomNumber}は${correctAnswer ? '素数' : '素数ではない'}です。`;
+            const resultText = correctAnswer === userAnswer ? '正解です！' : `間違いです。${randomNumber}は${correctAnswer ? '素数' : '素数ではない'}です。`;
 
             document.getElementById('primeAnswer').textContent = resultText;
 
@@ -232,6 +226,22 @@
             document.getElementById('modeDisplay').textContent = '素数チェックモード';
             document.getElementById('Check').style.display = 'block';
         }
+        
+        function primeFactorization(num) {
+          if(num <= 1) return [];
+          const factors = [];
+          let divisor = 2;
+          while(num >= divisor * divisor) {
+            if(num % divisor === 0) {
+              factors.push(divisor);
+              num /= divisor;
+            } else {
+              divisor++;
+            }
+          }
+          factors.push(num);
+          return factors;
+        }
 
         function checkPrime() {
             const input = document.getElementById('numberInput').value;
@@ -240,8 +250,17 @@
                 document.getElementById('result').textContent = '有効な数字を入力してください。';
                 return;
             }
-            const result = isPrime(number) ? `${number}は素数です。` : `${number}は素数ではありません。`;
-            document.getElementById('result').textContent = result;
+            const isPrimeResult = isPrime(number);
+            const resultText = isPrimeResult ? `${number}は素数です。` : `${number}は素数ではありません。`;
+            document.getElementById('result').textContent = resultText;
+            
+            if(!isPrimeResult && number > 1) {
+              const factors = primeFactorization(number);
+              const factorsText = `${number}は <span style="color: red;">${factors.join(' × ')}</span> で表されます。`;
+              document.getElementById('factors').innerHTML = factorsText;
+            } else {
+              document.getElementById('factors').textContent = '';
+            }
         }
     </script>
 </head>
@@ -259,6 +278,7 @@
             <input type="number" id="numberInput" required>
             <button onclick="checkPrime()">判定</button>
             <p id="result"></p>
+            <p id="factors"></p>
         </div>
 
         <div id="primeGameContainer" style="display: none;">
